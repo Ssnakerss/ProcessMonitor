@@ -1,0 +1,29 @@
+{{template "base" .}}
+{{define "title"}}Настройки{{end}}
+{{define "content"}}
+<h1>Настройки</h1>
+<form method="POST" action="/config">
+    <label>Интервал опроса (сек)</label>
+    <input type="number" name="poll_interval_sec" value="{{printf "%.0f" .Config.PollInterval.Seconds}}" min="1">
+
+    <label>Простой до остановки таймера (сек)</label>
+    <input type="number" name="idle_timeout_sec" value="{{printf "%.0f" .Config.IdleTimeout.Seconds}}" min="1">
+
+    <label>Предупреждать за (мин)</label>
+    <input type="number" name="notify_before_minutes" value="{{.Config.NotifyBeforeMinutes}}" min="0">
+
+    <label>Общий лимит компьютера (мин)</label>
+    <input type="number" name="computer_daily_limit_minutes" value="{{.Config.ComputerLimitMinutes}}" min="0">
+
+    <label>Веб-порт</label>
+    <input type="number" name="web_port" value="{{.Port}}" min="1" max="65535">
+
+    <label>Веб-bind (0.0.0.0 для удалённого доступа)</label>
+    <input type="text" name="web_bind" value="{{.Bind}}">
+
+    <label>Новый пароль администратора (оставьте пустым, чтобы не менять)</label>
+    <input type="password" name="admin_password">
+
+    <button type="submit">Сохранить</button>
+</form>
+{{end}}

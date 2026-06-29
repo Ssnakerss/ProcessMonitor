@@ -1,0 +1,12 @@
+{{template "base" .}}
+{{define "title"}}Вход{{end}}
+{{define "content"}}
+<h1>Вход в Parental Control</h1>
+{{if .Error}}<p style="color:red;">{{.Error}}</p>{{end}}
+<form method="POST" action="/login">
+    <label>Пароль</label>
+    <input type="password" name="password" required autofocus>
+    <button type="submit">Войти</button>
+</form>
+<p class="muted">По умолчанию: <code>admin</code>. Смените его после первого входа.</p>
+{{end}}

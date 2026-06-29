@@ -1,0 +1,35 @@
+{{template "base" .}}
+{{define "title"}}{{if .Edit}}Изменить{{else}}Новое{{end}} правило{{end}}
+{{define "content"}}
+<h1>{{if .Edit}}Изменить{{else}}Новое{{end}} правило</h1>
+{{$r := .Rule}}
+<form method="POST" action="{{if .Edit}}/rules/{{$r.ID}}{{else}}/rules{{end}}">
+    <label>Название</label>
+    <input type="text" name="name" value="{{$r.Name}}" required>
+
+    <label>Имя исполняемого файла</label>
+    <input type="text" name="exec_name" value="{{$r.ExecName}}" placeholder="notepad.exe" required>
+
+    <label>SHA256 (опционально)</label>
+    <input type="text" name="exec_hash" value="{{$r.ExecHash}}">
+
+    <label>Дни недели, Пн…Вс, 1/0</label>
+    <input type="text" name="weekdays" value="{{$r.Weekdays}}" pattern="[01]{7}" required>
+
+    <label>Временные окна JSON</label>
+    <input type="text" name="time_windows" value="{{$r.TimeWindows}}" placeholder='[{"start":"09:00","end":"21:00"}]'>
+
+    <label>Дневной лимит (мин)</label>
+    <input type="number" name="daily_limit_minutes" value="{{$r.DailyLimitMinutes}}" min="0">
+
+    <label>Предупреждать за (мин)</label>
+    <input type="number" name="notify_before_minutes" value="{{$r.NotifyBeforeMinutes}}" min="0">
+
+    <label>
+        <input type="checkbox" name="block_after_limit" {{if $r.BlockAfterLimit}}checked{{end}}>
+        Закрывать приложение при достижении лимита
+    </label>
+
+    <button type="submit">Сохранить</button>
+</form>
+{{end}}

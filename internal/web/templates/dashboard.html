@@ -1,0 +1,53 @@
+{{template "base" .}}
+{{define "title"}}Dashboard{{end}}
+{{define "content"}}
+<h1>Dashboard</h1>
+<p class="muted">Сегодня: {{.Today}}</p>
+
+<h2>Общее время компьютера</h2>
+<p>Использовано: <strong>{{.ComputerUsed}} мин</strong></p>
+<p>Бонус: <strong>{{.ComputerBonus}} мин</strong></p>
+<form method="POST" action="/bonus/computer" class="inline">
+    <input type="number" name="minutes" min="1" placeholder="мин" style="width:80px;" required>
+    <input type="text" name="note" placeholder="примечание" style="width:200px;">
+    <button type="submit">Добавить бонус</button>
+</form>
+
+<h2>Приложения</h2>
+<table>
+    <tr>
+        <th>Правило</th>
+        <th>Исполняемый файл</th>
+        <th>Использовано</th>
+        <th>Лимит</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    {{range .Rules}}
+    <tr>
+        <td>{{.Name}}</td>
+        <td class="muted">{{.ExecName}}</td>
+        <td>{{.UsedMinutes}} мин</td>
+        <td>{{.LimitMinutes}} мин</td>
+        <td>
+            {{if .Blocked}}<span class="badge bad">Заблокировано</span>
+            {{else if ge .UsedMinutes .LimitMinutes}}<span class="badge warn">Лимит</span>
+            {{else}}<span class="badge ok">OK</span>{{end}}
+        </td>
+        <td>
+            <form method="POST" action="/rules/{{.ID}}/bonus" class="inline">
+                <input type="number" name="minutes" min="1" placeholder="мин" style="width:60px;" required>
+                <input type="text" name="note" placeholder="прим." style="width:90px;">
+                <button type="submit">Бонус</button>
+            </form>
+            {{if .Blocked}}
+            <form method="POST" action="/rules/{{.ID}}/unblock" class="inline">
+                <button type="submit">Разблокировать</button>
+            </form>
+            {{end}}
+            <a href="/rules/{{.ID}}/edit">Изменить</a>
+        </td>
+    </tr>
+    {{end}}
+</table>
+{{end}}

@@ -1,0 +1,21 @@
+{{template "base" .}}
+{{define "title"}}Логи{{end}}
+{{define "content"}}
+<h1>Журнал событий</h1>
+<table>
+    <tr>
+        <th>Время</th>
+        <th>Тип</th>
+        <th>Сообщение</th>
+        <th>Детали</th>
+    </tr>
+    {{range .Events}}
+    <tr>
+        <td>{{.CreatedAt.Format "2006-01-02 15:04:05"}}</td>
+        <td>{{.Type}}</td>
+        <td>{{.Message}}</td>
+        <td class="muted">{{.Details}}</td>
+    </tr>
+    {{end}}
+</table>
+{{end}}
