@@ -1,6 +1,7 @@
 {{template "base" .}}
-{{define "title"}}Вход{{end}}
-{{define "content"}}
+
+{{define "login_title"}}Вход{{end}}
+{{define "login_content"}}
 <h1>Вход в Parental Control</h1>
 {{if .Error}}<p style="color:red;">{{.Error}}</p>{{end}}
 <form method="POST" action="/login">

@@ -14,7 +14,7 @@ import (
 )
 
 func (s *Server) loginPage(w http.ResponseWriter, r *http.Request) {
-	s.render(w, "login.html", nil)
+	s.render(w, "login", nil)
 }
 
 func (s *Server) login(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +34,7 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
-		s.render(w, "login.html", map[string]any{"Error": "Неверный пароль"})
+		s.render(w, "login", map[string]any{"Error": "Неверный пароль"})
 		return
 	}
 
@@ -94,7 +94,7 @@ func (s *Server) dashboard(w http.ResponseWriter, r *http.Request) {
 	computerUsed, _ := s.db.GetUsage(r.Context(), db.RuleIDComputer, today)
 	computerBonus, _ := s.db.TotalBonusMinutesForDate(r.Context(), db.RuleIDComputer, today)
 
-	s.render(w, "dashboard.html", map[string]any{
+	s.render(w, "dashboard", map[string]any{
 		"Rules":         states,
 		"ComputerUsed":  computerUsed / 60,
 		"ComputerBonus": computerBonus,
@@ -104,11 +104,11 @@ func (s *Server) dashboard(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) listRules(w http.ResponseWriter, r *http.Request) {
 	rules, _ := s.db.ListAppRules(r.Context())
-	s.render(w, "rules.html", map[string]any{"Rules": rules})
+	s.render(w, "rules", map[string]any{"Rules": rules})
 }
 
 func (s *Server) newRuleForm(w http.ResponseWriter, r *http.Request) {
-	s.render(w, "rule_form.html", map[string]any{
+	s.render(w, "rule_form", map[string]any{
 		"Rule": db.AppRule{
 			Weekdays:            "1111111",
 			TimeWindows:         "[]",
@@ -140,7 +140,7 @@ func (s *Server) editRuleForm(w http.ResponseWriter, r *http.Request) {
 		s.errorPage(w, "правило не найдено", http.StatusNotFound)
 		return
 	}
-	s.render(w, "rule_form.html", map[string]any{"Rule": rule, "Edit": true})
+	s.render(w, "rule_form", map[string]any{"Rule": rule, "Edit": true})
 }
 
 func (s *Server) updateRule(w http.ResponseWriter, r *http.Request) {
@@ -226,7 +226,7 @@ func (s *Server) configForm(w http.ResponseWriter, r *http.Request) {
 		bind = v
 	}
 
-	s.render(w, "config.html", map[string]any{
+	s.render(w, "config", map[string]any{
 		"Config": cfg,
 		"Port":   port,
 		"Bind":   bind,
@@ -314,7 +314,7 @@ func (s *Server) showLogs(w http.ResponseWriter, r *http.Request) {
 		limit = n
 	}
 	events, _ := s.db.RecentEvents(r.Context(), limit)
-	s.render(w, "logs.html", map[string]any{"Events": events})
+	s.render(w, "logs", map[string]any{"Events": events})
 }
 
 func atoi(s string) int {

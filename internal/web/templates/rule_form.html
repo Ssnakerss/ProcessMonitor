@@ -1,6 +1,7 @@
 {{template "base" .}}
-{{define "title"}}{{if .Edit}}Изменить{{else}}Новое{{end}} правило{{end}}
-{{define "content"}}
+
+{{define "rule_form_title"}}{{if .Edit}}Изменить{{else}}Новое{{end}} правило{{end}}
+{{define "rule_form_content"}}
 <h1>{{if .Edit}}Изменить{{else}}Новое{{end}} правило</h1>
 {{$r := .Rule}}
 <form method="POST" action="{{if .Edit}}/rules/{{$r.ID}}{{else}}/rules{{end}}">

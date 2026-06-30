@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Ssnakerss/processmonitor/internal/db"
 	"github.com/Ssnakerss/processmonitor/internal/service"
@@ -23,7 +24,7 @@ type Server struct {
 }
 
 func New(database *db.DB, svc *service.Service) (*Server, error) {
-	tmpl, err := template.ParseFS(templatesFS, "templates/*.html")
+	tmpl, err := parseTemplates()
 	if err != nil {
 		return nil, fmt.Errorf("parse templates: %w", err)
 	}
@@ -36,6 +37,33 @@ func New(database *db.DB, svc *service.Service) (*Server, error) {
 	}
 	s.routes()
 	return s, nil
+}
+
+func parseTemplates() (*template.Template, error) {
+	files := []string{
+		"base.html",
+		"login.html",
+		"dashboard.html",
+		"rules.html",
+		"rule_form.html",
+		"config.html",
+		"logs.html",
+		"error.html",
+	}
+
+	root := template.New("base")
+
+	for _, f := range files {
+		name := strings.TrimSuffix(f, ".html")
+		b, err := templatesFS.ReadFile("templates/" + f)
+		if err != nil {
+			return nil, fmt.Errorf("read %s: %w", f, err)
+		}
+		if _, err := root.New(name).Parse(string(b)); err != nil {
+			return nil, fmt.Errorf("parse %s: %w", f, err)
+		}
+	}
+	return root, nil
 }
 
 // Run читает веб-настройки из БД и запускает HTTP-сервер.
@@ -72,15 +100,32 @@ func (s *Server) Run(ctx context.Context) error {
 }
 
 func (s *Server) render(w http.ResponseWriter, name string, data any) {
+	m, ok := data.(map[string]any)
+	if !ok {
+		if sm, ok := data.(map[string]string); ok {
+			m = make(map[string]any, len(sm))
+			for k, v := range sm {
+				m[k] = v
+			}
+		} else {
+			m = map[string]any{"Data": data}
+		}
+	}
+
+	if _, exists := m["TitleTemplate"]; !exists {
+		m["TitleTemplate"] = name + "_title"
+		m["ContentTemplate"] = name + "_content"
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := s.tmpl.ExecuteTemplate(w, name, data); err != nil {
+	if err := s.tmpl.ExecuteTemplate(w, name, m); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func (s *Server) errorPage(w http.ResponseWriter, msg string, code int) {
 	w.WriteHeader(code)
-	s.render(w, "error.html", map[string]string{"Message": msg})
+	s.render(w, "error", map[string]string{"Message": msg})
 }
 
 func (s *Server) routes() {
